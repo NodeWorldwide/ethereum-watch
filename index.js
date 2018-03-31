@@ -7,7 +7,7 @@ const fetch    = require('node-fetch')
 const fs       = require('fs')
 
 
-const ETH_NODE = process.env.ETH_NODE || 'http://localhost:8845'
+const ETH_NODE = process.env.ETH_NODE || 'http://localhost:8545'
 const web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE))
 
 const addresses = []
