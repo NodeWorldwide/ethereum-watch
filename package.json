@@ -1,0 +1,26 @@
+{
+  "name": "ethereum-watch",
+  "version": "1.0.0",
+  "description": "watch ethereum contract events and fire webhooks",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "NODE_ENV=production node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NodeWorldwide/ethereum-watch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NodeWorldwide/ethereum-watch/issues"
+  },
+  "homepage": "https://github.com/NodeWorldwide/ethereum-watch#readme",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "eth-chainsaw": "^1.1.5",
+    "node-fetch": "^2.1.2",
+    "web3": "^0.20.6"
+  }
+}

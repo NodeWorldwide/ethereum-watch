@@ -1,0 +1,18 @@
+[Unit]
+Description=ethereum watch
+After=syslog.target network.target geth.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/ethereum-watch
+ExecStart=/usr/bin/npm start
+Environment="NODE_ENV=production"
+Restart=on-failure
+KillSignal=SIGINT
+SyslogIdentifier=ethereum-watch
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target

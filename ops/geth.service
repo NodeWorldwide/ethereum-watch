@@ -1,0 +1,17 @@
+[Unit]
+Description=geth node
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=geth --rpc
+Restart=on-failure
+KillSignal=SIGINT
+SyslogIdentifier=geth
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target

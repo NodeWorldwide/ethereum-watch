@@ -1,0 +1,10 @@
+/var/log/ethereum-watch.log {
+  su root syslog
+  weekly
+  missingok
+  copytruncate
+  rotate 12
+  compress
+  notifempty
+  size 100M
+}
