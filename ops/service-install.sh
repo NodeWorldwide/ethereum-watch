@@ -6,6 +6,9 @@ sudo apt-get update
 curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 sudo apt-get install --assume-yes nodejs build-essential
 
+# get all dependencies required by ethereum-watch
+npm install
+
 # install geth client depedency
 sudo apt-get install software-properties-common
 sudo add-apt-repository -y ppa:ethereum/ethereum
