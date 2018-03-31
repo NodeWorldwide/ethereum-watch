@@ -7,7 +7,8 @@ const fetch    = require('node-fetch')
 const fs       = require('fs')
 
 
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETH_NODE))
+const ETH_NODE = process.env.ETH_NODE || 'http://localhost:8845'
+const web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE))
 
 const addresses = []
 const abis = []
@@ -31,8 +32,7 @@ files.forEach(function(filename) {
   watchContract(filename)
 })
 
-console.log('addresses:', addresses)
-process.exit(0)
+console.log('watching contract addresses:', addresses)
 
 const chainsaw = new Chainsaw(web3, addresses)
 
