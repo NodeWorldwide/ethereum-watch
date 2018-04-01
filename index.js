@@ -7,6 +7,7 @@ const fetch    = require('node-fetch')
 const fs       = require('fs')
 
 
+const ETH_NETWORK_RINKEBY = 4
 const ETH_NODE = process.env.ETH_NODE || 'http://localhost:8545'
 const web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE))
 
@@ -18,7 +19,7 @@ function watchContract(filename) {
   try {
     let contr = fs.readFileSync(__dirname + `/contracts/${filename}`)
     contr = JSON.parse(contr)
-    addresses.push(contr.networks['4'].address)
+    addresses.push(contr.networks[ETH_NETWORK_RINKEBY].address)
     abis.push(contr.abi)
   } catch(er) {
     console.error('failed to parse contract abi. ensure it is built and try again')
