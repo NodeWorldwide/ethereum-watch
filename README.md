@@ -11,21 +11,64 @@ cd ops
 ```
 
 
-Here's the output from puchasing a token
-```bash
-event occured involving address 0xec91feb6edcff328e24376e0abd08812d305073e event data:
-[ [ { name: 'Transfer',
-      events: [Array],
-      address: '0xec91feb6edcff328e24376e0abd08812d305073e',
-      logIndex: 0,
-      blockHash: '0xdaa8b31217c3fe9015f5cd1357076958116b0027fb0eb99215c391ae4af752b6',
-      blockNumber: 2031471,
-      contractAddress: '0xec91feb6edcff328e24376e0abd08812d305073e',
-      sender: '0x69117dc22d8154a28e42b94dd9d2cbcb564639ef',
-      receiver: '0xec91feb6edcff328e24376e0abd08812d305073e',
-      eventType: 'Transfer',
-      fields: [Array],
-      ts: 1522542107 } ] ]
+Here's an example event that fires when purchasing a token
+```javascript
+[
+  [{
+    "name": "Transfer",
+    "events": [{
+      "name": "from",
+      "type": "address",
+      "value": "0x0000000000000000000000000000000000000000"
+    }, {
+      "name": "to",
+      "type": "address",
+      "value": "0x69117dc22d8154a28e42b94dd9d2cbcb564639ef"
+    }, {
+      "name": "assetId",
+      "type": "uint256",
+      "value": "106426312931277267304608430754406144260365593437795917950666279101627564215339"
+    }, {
+      "name": "operator",
+      "type": "address",
+      "value": "0x69117dc22d8154a28e42b94dd9d2cbcb564639ef"
+    }, {
+      "name": "userData",
+      "type": "bytes",
+      "value": "0x"
+    }],
+    "address": "0xec91feb6edcff328e24376e0abd08812d305073e",
+    "logIndex": 1,
+    "blockHash": "0xf15589e41496005f1869385f0eece67d5984fd7a5a348b42dd7594461afac887",
+    "blockNumber": 2031549,
+    "contractAddress": "0xec91feb6edcff328e24376e0abd08812d305073e",
+    "sender": "0x69117dc22d8154a28e42b94dd9d2cbcb564639ef",
+    "receiver": "0xec91feb6edcff328e24376e0abd08812d305073e",
+    "eventType": "Transfer",
+    "fields": [{
+      "name": "from",
+      "type": "address",
+      "value": "0x0000000000000000000000000000000000000000"
+    }, {
+      "name": "to",
+      "type": "address",
+      "value": "0x69117dc22d8154a28e42b94dd9d2cbcb564639ef"
+    }, {
+      "name": "assetId",
+      "type": "uint256",
+      "value": "106426312931277267304608430754406144260365593437795917950666279101627564215339"
+    }, {
+      "name": "operator",
+      "type": "address",
+      "value": "0x69117dc22d8154a28e42b94dd9d2cbcb564639ef"
+    }, {
+      "name": "userData",
+      "type": "bytes",
+      "value": "0x"
+    }],
+    "ts": 1522543277
+  }]
+]
 ```
 
 ## notes and links
