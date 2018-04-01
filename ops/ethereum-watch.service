@@ -1,6 +1,6 @@
 [Unit]
 Description=ethereum watch
-After=syslog.target network.target geth.service
+After=syslog.target network.target geth.service geth-rinkeby.service
 
 [Service]
 Type=simple

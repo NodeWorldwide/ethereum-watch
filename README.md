@@ -73,3 +73,5 @@ Here's an example event that fires when purchasing a token
 
 ## notes and links
 https://medium.com/mercuryprotocol/how-to-run-an-ethereum-node-on-aws-a8774ed3acf6
+
+https://ethereum.stackexchange.com/questions/7006/how-to-run-two-nodes-on-the-same-device

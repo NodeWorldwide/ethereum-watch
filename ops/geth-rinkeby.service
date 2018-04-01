@@ -1,0 +1,17 @@
+[Unit]
+Description=geth rinkeby node
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/geth --rinkeby --port 30304 --datadir ~/.ethereum-04 --rpc --rpcport 8546
+Restart=on-failure
+KillSignal=SIGINT
+SyslogIdentifier=geth-rinkeby
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
