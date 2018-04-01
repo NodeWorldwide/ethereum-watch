@@ -44,18 +44,20 @@ addresses.forEach(function(address, idx) {
   chainsaw.addABI(abi)
 
   // The polling method of event listening
+  const eventCallBack = (error, eventData) => {
+    if (!error && eventData.length > 0) {
+      console.log('event occured involving address', address, 'event data:')
+      console.log(eventData)
+      const args = eventData[0][1].fields
 
-  // const eventCallBack = (error, eventData) => {
-  //   if (!error && eventData.length > 0) {
-  //     const args = eventData[0][1].fields
+      console.log(`Address of who called: ${args[0].value},
+                   placeData: ${args[1].value},
+                   assetId: ${args[2].value}`);
+    }
+  }
+  chainsaw.turnOnPolling(eventCallBack)
 
-  //     console.log(`Address of who called: ${args[0].value},
-  //                 placeData: ${args[1].value},
-  //                 assetId: ${args[2].value}`);
-  //   }
-  // }
-  // chainsaw.turnOnPolling(eventCallBack)
-
+  /*
   // triggered every time somebody calls the claim method on the contract
   contractInstance.Claimed().watch((err, event) => {
     const args = event.args
@@ -67,4 +69,5 @@ addresses.forEach(function(address, idx) {
     // TODO: fire POST request
     //fetch()
   })
+  */
 })
