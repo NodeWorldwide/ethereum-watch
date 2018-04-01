@@ -47,12 +47,15 @@ addresses.forEach(function(address, idx) {
   const eventCallBack = (error, eventData) => {
     if (!error && eventData.length > 0) {
       console.log('event occured involving address', address, 'event data:')
-      console.log(eventData)
+      console.log(JSON.stringify(eventData))
+
+      /*
       const args = eventData[0][1].fields
 
       console.log(`Address of who called: ${args[0].value},
                    placeData: ${args[1].value},
-                   assetId: ${args[2].value}`);
+                   assetId: ${args[2].value}`)
+                   */
     }
   }
   chainsaw.turnOnPolling(eventCallBack)
