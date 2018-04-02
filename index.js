@@ -60,7 +60,7 @@ for(let networkId in ethereumNodes) {
     if (error || !eventData.length)
       return
 
-    console.log('event occured involving address', address, 'event data:')
+    console.log('event occurred involving address', address, 'event data:')
     console.log(JSON.stringify(eventData))
 
     // fire webhooks for all matching addresses
@@ -71,7 +71,11 @@ for(let networkId in ethereumNodes) {
         return
 
       console.log('firing postback to ', address.postbackURL)
-      fetch(address.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
+      try {
+        fetch(address.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
+      } catch(er){
+        console.log(`https POST request to webhook at ${address.postbackURL} failed. er:`, er)
+      }
     })
   }
 
