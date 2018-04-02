@@ -6,8 +6,11 @@ const dotenv   = require('dotenv').config()
 const fetch    = require('node-fetch')
 
 
-const ETH_NETWORK_MAIN = '1'
-const ETH_NETWORK_RINKEBY = '4'
+const ETH_NETWORK_MAIN = 1
+const ETH_NETWORK_RINKEBY = 4
+
+const ETH_NODE_MAIN = process.env.ETH_NODE_MAIN || 'http://localhost:8545'
+const ETH_NODE_RINKEBY = process.env.ETH_NODE_RINKEBY || 'http://localhost:8546'
 
 const addressesToWatch = [
   {
@@ -22,62 +25,48 @@ const addressesToWatch = [
   },
 ]
 
-const ETH_NODE_MAIN = process.env.ETH_NODE_MAIN || 'http://localhost:8545'
-const ETH_NODE_RINKEBY = process.env.ETH_NODE_RINKEBY || 'http://localhost:8546'
 
-const ethereumNodes = {
-  '1': {
-    web3: new Web3(new Web3.providers.HttpProvider(ETH_NODE_MAIN))
-  },
-  '4': {
-    web3: new Web3(new Web3.providers.HttpProvider(ETH_NODE_RINKEBY))
-  }
-}
+function watchNetwork(networkId, eth_node_address, addresses) {
+  const filtered = []
 
+  addresses.forEach(function(addressToWatch) {
+    if(addressToWatch.networkId === networkId)
+      filtered.push(addressToWatch.toAddress)
+  })
 
-const mainAddresses = []
+  if(!filtered.length)
+    return
 
-addressesToWatch.forEach(function(addressToWatch) {
-  if(addressToWatch.networkId === ETH_NETWORK_MAIN)
-    mainAddresses.push(addressToWatch.toAddress)
-})
-
-const rinkebyAddresses = []
-addressesToWatch.forEach(function(addressToWatch) {
-  if(addressToWatch.networkId === ETH_NETWORK_RINKEBY)
-    rinkebyAddresses.push(addressToWatch.toAddress)
-})
-
-
-ethereumNodes[ETH_NETWORK_MAIN].chainsaw = new Chainsaw(ethereumNodes[ETH_NETWORK_MAIN].web3, mainAddresses)
-ethereumNodes[ETH_NETWORK_RINKEBY].chainsaw = new Chainsaw(ethereumNodes[ETH_NETWORK_RINKEBY].web3, rinkebyAddresses)
-
-for(let networkId in ethereumNodes) {
-  const network = ethereumNodes[networkId]
+  const web3 = new Web3(new Web3.providers.HttpProvider(eth_node_address))
+  const chainsaw = new Chainsaw(web3, filtered)
 
   // The polling method of event listening
   const eventCallBack = (error, eventData) => {
     if (error || !eventData.length)
       return
 
-    console.log('event occurred involving address', address, 'event data:')
+    console.log(networkId, 'event occurred involving address', address, 'event data:')
     console.log(JSON.stringify(eventData))
 
     // fire webhooks for all matching addresses
-    addressesToWatch.forEach(function(a) {
+    addresses.forEach(function(a) {
       if(a.networkId !== networkId)
         return
       if(a.toAddress !== eventData[0][0].receiver)
         return
 
-      console.log('firing postback to ', address.postbackURL)
+      console.log(networkId, 'firing postback to ', address.postbackURL)
       try {
         fetch(address.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
       } catch(er){
-        console.log(`https POST request to webhook at ${address.postbackURL} failed. er:`, er)
+        console.log(`network: ${networkId} https POST request to webhook at ${address.postbackURL} failed. er:`, er)
       }
     })
   }
 
-  network.chainsaw.turnOnPolling(eventCallBack)
+  chainsaw.turnOnPolling(eventCallBack)
 }
+
+
+watchNetwork(ETH_NETWORK_MAIN, ETH_NODE_MAIN, addressesToWatch)
+watchNetwork(ETH_NETWORK_RINKEBY, ETH_NODE_RINKEBY, addressesToWatch)
