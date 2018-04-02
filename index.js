@@ -71,7 +71,7 @@ for(let networkId in ethereumNodes) {
         return
 
       console.log('firing postback to ', address.postbackURL)
-      fetch(address.postbackURL, { method: 'POST', body: eventData })
+      fetch(address.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
     })
   }
 
