@@ -4,73 +4,76 @@ const Chainsaw = require('eth-chainsaw').Chainsaw
 const Web3     = require('web3')
 const dotenv   = require('dotenv').config()
 const fetch    = require('node-fetch')
-const fs       = require('fs')
 
 
-const ETH_NETWORK_RINKEBY = 4
-const ETH_NODE = process.env.ETH_NODE || 'http://localhost:8545'
-const web3 = new Web3(new Web3.providers.HttpProvider(ETH_NODE))
+const ETH_NETWORK_MAIN = '1'
+const ETH_NETWORK_RINKEBY = '4'
 
-const addresses = []
-const abis = []
+const addressesToWatch = [
+  {
+    toAddress: '0x69117dC22D8154a28E42B94dD9D2cbcb564639Ef', // nodeworldwide test payment address
+    networkId: ETH_NETWORK_RINKEBY,
+    postbackURL: 'https://stage.nodeworldwide.io/webhooks/ethereum-payment'
+  },
+  {
+    toAddress: '0x3578C91A9B3dE921BB29c61e57edb5410Cd1229C', // nodweworldwide production payment address
+    networkId: ETH_NETWORK_MAIN,
+    postbackURL: 'https://nodeworldwide.io/webhooks/ethereum-payment'
+  },
+]
 
+const ETH_NODE_MAIN = process.env.ETH_NODE_MAIN || 'http://localhost:8545'
+const ETH_NODE_RINKEBY = process.env.ETH_NODE_RINKEBY || 'http://localhost:8546'
 
-function watchContract(filename) {
-  try {
-    let contr = fs.readFileSync(__dirname + `/contracts/${filename}`)
-    contr = JSON.parse(contr)
-    addresses.push(contr.networks[ETH_NETWORK_RINKEBY].address)
-    abis.push(contr.abi)
-  } catch(er) {
-    console.error('failed to parse contract abi. ensure it is built and try again')
-    process.exit(1)
+const ethereumNodes = {
+  '1': {
+    web3: new Web3(new Web3.providers.HttpProvider(ETH_NODE_MAIN))
+  },
+  '4': {
+    web3: new Web3(new Web3.providers.HttpProvider(ETH_NODE_RINKEBY))
   }
 }
 
 
-const files = fs.readdirSync(__dirname + '/contracts/')
-files.forEach(function(filename) {
-  watchContract(filename)
+const mainAddresses = []
+
+addressesToWatch.forEach(function(addressToWatch) {
+  if(addressToWatch.networkId === ETH_NETWORK_MAIN)
+    mainAddresses.push(addressToWatch.toAddress)
 })
 
-console.log('watching contract addresses:', addresses)
+const rinkebyAddresses = []
+addressesToWatch.forEach(function(addressToWatch) {
+  if(addressToWatch.networkId === ETH_NETWORK_RINKEBY)
+    rinkebyAddresses.push(addressToWatch.toAddress)
+})
 
-const chainsaw = new Chainsaw(web3, addresses)
 
+ethereumNodes[ETH_NETWORK_MAIN].chainsaw = new Chainsaw(ethereumNodes[ETH_NETWORK_MAIN].web3, mainAddresses)
+ethereumNodes[ETH_NETWORK_RINKEBY].chainsaw = new Chainsaw(ethereumNodes[ETH_NETWORK_RINKEBY].web3, rinkebyAddresses)
 
-addresses.forEach(function(address, idx) {
-  const abi = abis[idx]
-  const contractInstance = web3.eth.contract(abi).at(address)
-  chainsaw.addABI(abi)
+for(let networkId in ethereumNodes) {
+  const network = ethereumNodes[networkId]
 
   // The polling method of event listening
   const eventCallBack = (error, eventData) => {
-    if (!error && eventData.length > 0) {
-      console.log('event occured involving address', address, 'event data:')
-      console.log(JSON.stringify(eventData))
+    if (error || !eventData.length)
+      return
 
-      /*
-      const args = eventData[0][1].fields
+    console.log('event occured involving address', address, 'event data:')
+    console.log(JSON.stringify(eventData))
 
-      console.log(`Address of who called: ${args[0].value},
-                   placeData: ${args[1].value},
-                   assetId: ${args[2].value}`)
-                   */
-    }
+    // fire webhooks for all matching addresses
+    addressesToWatch.forEach(function(a) {
+      if(a.networkId !== networkId)
+        return
+      if(a.toAddress !== eventData[0][0].receiver)
+        return
+
+      console.log('firing postback to ', address.postbackURL)
+      fetch(address.postbackURL, { method: 'POST', body: eventData })
+    })
   }
-  chainsaw.turnOnPolling(eventCallBack)
 
-  /*
-  // triggered every time somebody calls the claim method on the contract
-  contractInstance.Claimed().watch((err, event) => {
-    const args = event.args
-    console.log(`Address of who called: ${args._claimer},
-                 placeData: ${args._placeData},
-                 assetId: ${args._assetId.toString(10)}`)
-
-    // TODO: sign body with secret
-    // TODO: fire POST request
-    //fetch()
-  })
-  */
-})
+  network.chainsaw.turnOnPolling(eventCallBack)
+}
