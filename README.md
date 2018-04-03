@@ -71,16 +71,17 @@ Here's an example event that fires when purchasing a token
 ]
 ```
 
-## validate webhook source
+## validate webhook signature
 
-You should validate that a webhook originated from the right place. `ethereum-watch` generates 2
-http response headers, `t` (timestamp) and `v1` (signature of the signed body.) You can re-use stripe's
-body checking logic, like this:
+You should validate that a webhook originated from ethereum-watch, and wasn't spoofed.
+`ethereum-watch` generates 2 http response headers, `t` (timestamp) and `v1` (signature
+of the signed body.) Here's an example expressjs route demonstrating how you can re-use
+stripe's body checking logic to do this:
 
 ```javascript
 const webhooks = require('stripe/lib/Webhooks')
 
-const sharedApiSecret = '...'  secret key shared with ethereuem-watch backend and this client
+const sharedApiSecret = '...' // secret key shared with ethereuem-watch backend and this client
 
 const app = express()
 
