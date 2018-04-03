@@ -67,6 +67,8 @@ function watchNetwork(networkId, eth_node_address, addresses) {
   }
 
   chainsaw.turnOnPolling(eventCallBack)
+
+  return { chainsaw, web3, networkId, filtered }
 }
 
 
