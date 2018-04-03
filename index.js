@@ -6,8 +6,8 @@ const dotenv   = require('dotenv').config()
 const fetch    = require('node-fetch')
 
 
-const ETH_NETWORK_MAIN = 1
-const ETH_NETWORK_RINKEBY = 4
+const ETH_NETWORK_MAIN = '1'
+const ETH_NETWORK_RINKEBY = '4'
 
 const ETH_NODE_MAIN = process.env.ETH_NODE_MAIN || 'http://localhost:8545'
 const ETH_NODE_RINKEBY = process.env.ETH_NODE_RINKEBY || 'http://localhost:8546'
@@ -34,8 +34,10 @@ function watchNetwork(networkId, eth_node_address, addresses) {
       filtered.push(addressToWatch.toAddress)
   })
 
-  if(!filtered.length)
+  if(!filtered.length) {
+    console.log('no addresses to watch for network', networkId)
     return
+  }
 
   const web3 = new Web3(new Web3.providers.HttpProvider(eth_node_address))
   const chainsaw = new Chainsaw(web3, filtered)
