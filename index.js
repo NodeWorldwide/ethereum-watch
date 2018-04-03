@@ -45,7 +45,7 @@ function watchNetwork(networkId, eth_node_address, addresses) {
     if (error || !eventData.length)
       return
 
-    console.log(networkId, 'event occurred involving address', address, 'event data:')
+    console.log(networkId, 'event occurred. event data:')
     console.log(JSON.stringify(eventData))
 
     // fire webhooks for all matching addresses
@@ -55,11 +55,11 @@ function watchNetwork(networkId, eth_node_address, addresses) {
       if(a.toAddress !== eventData[0][0].receiver)
         return
 
-      console.log(networkId, 'firing postback to ', address.postbackURL)
+      console.log(networkId, 'firing postback to ', a.postbackURL)
       try {
-        fetch(address.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
+        fetch(a.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
       } catch(er){
-        console.log(`network: ${networkId} https POST request to webhook at ${address.postbackURL} failed. er:`, er)
+        console.log(`network: ${networkId} https POST request to webhook at ${a.postbackURL} failed. er:`, er)
       }
     })
   }
