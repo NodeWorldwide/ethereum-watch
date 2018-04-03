@@ -4,6 +4,8 @@ const Chainsaw = require('eth-chainsaw').Chainsaw
 const Web3     = require('web3')
 const dotenv   = require('dotenv').config()
 const fetch    = require('node-fetch')
+// re-use webhook request signing logic from stripe
+const webhooks = require('stripe/lib/Webhooks')
 
 
 const ETH_NETWORK_MAIN = '1'
@@ -16,12 +18,14 @@ const addressesToWatch = [
   {
     toAddress: '0x69117dC22D8154a28E42B94dD9D2cbcb564639Ef', // nodeworldwide test payment address
     networkId: ETH_NETWORK_RINKEBY,
-    postbackURL: 'https://stage.nodeworldwide.io/webhooks/ethereum-payment'
+    postbackURL: 'https://stage.nodeworldwide.io/webhooks/ethereum-payment',
+    apiSecret: '@9356$&%elfjwejasfasQWE#2e2eERGITsfj'
   },
   {
     toAddress: '0x3578C91A9B3dE921BB29c61e57edb5410Cd1229C', // nodweworldwide production payment address
     networkId: ETH_NETWORK_MAIN,
-    postbackURL: 'https://nodeworldwide.io/webhooks/ethereum-payment'
+    postbackURL: 'https://nodeworldwide.io/webhooks/ethereum-payment',
+    apiSecret: '!dgas@#sdfajwejasfasQWE#asdf$%654sdf'
   },
 ]
 
@@ -59,7 +63,20 @@ function watchNetwork(networkId, eth_node_address, addresses) {
 
       console.log(networkId, 'firing postback to ', a.postbackURL)
       try {
-        fetch(a.postbackURL, { method: 'POST', body: JSON.stringify(eventData) })
+        // sign the request with the API shared secret so the receiver can validate
+        // this request wasn't spoofed. an alternative strategy could be this library:
+        // https://github.com/joyent/node-http-signature
+        const timestamp = Date.now() / 1000
+        const sig = webhooks.signature._computeSignature(timestamp + '.' + JSON.stringify(eventData), a.apiSecret)
+
+        fetch(a.postbackURL, {
+          method: 'POST',
+          body: JSON.stringify(eventData),
+          headers: {
+            t: timestamp,
+            v1: sig
+          }
+        })
       } catch(er){
         console.log(`network: ${networkId} https POST request to webhook at ${a.postbackURL} failed. er:`, er)
       }

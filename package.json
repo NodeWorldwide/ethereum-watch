@@ -18,9 +18,11 @@
   },
   "homepage": "https://github.com/NodeWorldwide/ethereum-watch#readme",
   "dependencies": {
+    "delay": "^2.0.0",
     "dotenv": "^5.0.1",
     "eth-chainsaw": "^1.1.5",
     "node-fetch": "^2.1.2",
+    "stripe": "^5.7.0",
     "web3": "^0.20.6"
   }
 }

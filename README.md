@@ -71,6 +71,37 @@ Here's an example event that fires when purchasing a token
 ]
 ```
 
+## validate webhook source
+
+You should validate that a webhook originated from the right place. `ethereum-watch` generates 2
+http response headers, `t` (timestamp) and `v1` (signature of the signed body.) You can re-use stripe's
+body checking logic, like this:
+
+```javascript
+const webhooks = require('stripe/lib/Webhooks')
+
+const sharedApiSecret = '...'  secret key shared with ethereuem-watch backend and this client
+
+const app = express()
+
+app.use(bodyParser.json())
+
+app.post('/my_webhook', function(req, res) {
+  try {
+    const header = `t=${req.headers.timestamp},v1=${request.headers.v1}`
+    const body = webhooks.constructEvent(JSON.stringify(req.body), header, sharedApiSecret)
+
+    // got here, request came from ethereum-watch backend
+
+    res.json({ status: 'success '})
+  } catch(er) {
+    console.error('request signature checking failed. webhook request might be spoofed!', er)
+    res.status(401).json({ status: 'failure'})
+  }
+})
+```
+
+
 ## notes and links
 https://medium.com/mercuryprotocol/how-to-run-an-ethereum-node-on-aws-a8774ed3acf6
 
